@@ -55,7 +55,7 @@ public class Header {
         return fields;
     }
 
-    private void addFields(Field field) {
+    public void addFields(Field field) {
         fields.add(field);
     }
 }

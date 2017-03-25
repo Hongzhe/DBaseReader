@@ -16,6 +16,7 @@ public class Field {
     public void setName(String name) {
         this.name = name;
     }
+    public String getName() {return name;}
 
     public char getFieldtype() {
         return fieldtype;
@@ -28,6 +29,7 @@ public class Field {
     public void setLength(int length) {
         this.length = length;
     }
+    public int getLength() { return this.length; }
 
     public int getDecimalcount() {
         return decimalcount;
