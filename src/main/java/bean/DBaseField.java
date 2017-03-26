@@ -4,14 +4,14 @@ package bean;
  * Table field
  * Created by Hongzhe on 3/24/2017.
  */
-public class Field {
+public class DBaseField {
 
     private String name;
     private char fieldtype;
     private int length;
     private int decimalcount;
 
-    public Field() {}
+    public DBaseField() {}
 
     public void setName(String name) {
         this.name = name;

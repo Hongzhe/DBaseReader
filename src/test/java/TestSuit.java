@@ -6,7 +6,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        Testtest.class
+        DBaseReaderTest.class
 })
 
 public class TestSuit {

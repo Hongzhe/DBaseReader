@@ -7,23 +7,25 @@ import java.util.List;
 /**
  * Created by Hongzhe on 3/24/2017.
  */
-public class Header {
+public class DBaseHeader {
 
-    private Date lastupdate;
+    //date is formatted as YYMMDD;
+    private String lastupdate;
+
     private int numberOfRecords;
     private int getNumberOfBytesInRecords;
     private int numberOfBytes;
-    private List<Field> fields;
+    private List<DBaseField> DBaseFields;
 
-    public Header() {
-        fields = new ArrayList<>();
+    public DBaseHeader() {
+        DBaseFields = new ArrayList<>();
     }
 
-    public Date getLastupdate() {
+    public String getLastupdate() {
         return lastupdate;
     }
 
-    public void setLastupdate(Date lastupdate) {
+    public void setLastupdate(String lastupdate) {
         this.lastupdate = lastupdate;
     }
 
@@ -51,11 +53,11 @@ public class Header {
         this.numberOfBytes = numberOfBytes;
     }
 
-    public List<Field> getFields() {
-        return fields;
+    public List<DBaseField> getDBaseFields() {
+        return DBaseFields;
     }
 
-    public void addFields(Field field) {
-        fields.add(field);
+    public void addFields(DBaseField DBaseField) {
+        DBaseFields.add(DBaseField);
     }
 }

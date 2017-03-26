@@ -27,6 +27,7 @@
                 <directory>${basedir}/src/main/resources</directory>
                 <includes>
                     <include>**/*.properties</include>
+                    <include>**/*.DAT</include>
                 </includes>
             </resource>
         </resources>
