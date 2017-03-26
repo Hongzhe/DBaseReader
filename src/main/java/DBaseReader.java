@@ -1,5 +1,6 @@
 import bean.Field;
 import bean.Header;
+import org.apache.log4j.Logger;
 import util.ReaderUtil;
 
 import java.io.IOException;
@@ -20,6 +21,8 @@ public class DBaseReader {
     public DBaseReader() {
         recordcount = 0;
     }
+
+    private static Logger log = Logger.getLogger(DBaseReader.class);
 
     public void read(String path) throws IOException {
         file = null;
@@ -62,5 +65,9 @@ public class DBaseReader {
         field.setLength(file.readByte());
         field.setDecimalcount(file.readByte());
         return field;
+    }
+
+    public static void main(String[] args) {
+        log.info("test properties");
     }
 }
