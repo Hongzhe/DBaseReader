@@ -37,8 +37,13 @@ public class DBaseResultSet {
         if (count > DBaseHeader.getNumberOfRecords()) {
             return false;
         }
-        pointer++; //skip the delete flag;
+        if (count != 0) {
+            pointer = recordHead;
+            pointer += recordlength;
+        }
+        pointer ++; //skip delete flag
         recordHead = pointer;
+        count++;
         return true;
     }
 
@@ -156,8 +161,10 @@ public class DBaseResultSet {
         pointer += computeFieldStart(columnIndex);
         BigDecimal decimal;
         try {
+            int fieldlength = DBaseHeader.getDBaseFields().get(columnIndex).getLength();
             byte[] bytes = ReaderUtil.readNBytes(file, pointer, DBaseHeader.getDBaseFields().get(columnIndex).getLength());
             String str = new String(bytes);
+            str = str.trim();
             decimal = new BigDecimal(str);
         } catch (IOException e) {
             throw new DBaseReaderException(e);
@@ -180,7 +187,7 @@ public class DBaseResultSet {
         try {
             byte[] bytes = ReaderUtil.readNBytes(file, pointer, DBaseHeader.getDBaseFields().get(columnIndex).getLength());
             String str = new String(bytes);
-            decimal = new BigDecimal(str);
+            decimal = new BigDecimal(str.trim());
         } catch (IOException e) {
             throw new DBaseReaderException(e);
         }

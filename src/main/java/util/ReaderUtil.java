@@ -9,6 +9,7 @@ import java.io.RandomAccessFile;
 public class ReaderUtil {
 
     public static byte[] readNBytes(RandomAccessFile file, long pointer, int length) throws IOException {
+        file.seek(pointer);
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++) {
             bytes[i] = file.readByte();
