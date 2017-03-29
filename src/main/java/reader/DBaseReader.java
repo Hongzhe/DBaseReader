@@ -1,16 +1,14 @@
+package reader;
+
 import bean.DBaseField;
 import bean.DBaseHeader;
 import org.apache.log4j.Logger;
-import util.ReaderUtil;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import static util.ReaderUtil.*;
+import static reader.ReaderUtil.*;
 
 
 /**
@@ -115,6 +113,5 @@ public class DBaseReader {
             lat = rs.getNumber(field2.getName());
             log.info(lng + " " + lat);
         }
-        //log.info(lng + " " + lat);
     }
 }

@@ -1,6 +1,7 @@
+package reader;
+
 import bean.DBaseField;
 import bean.DBaseHeader;
-import util.ReaderUtil;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 public class DBaseResultSet {
 
     private RandomAccessFile file;
-    private DBaseHeader DBaseHeader;
+    private DBaseHeader header;
     private long pointer;
     private int count;
     private long recordHead;
@@ -21,7 +22,7 @@ public class DBaseResultSet {
     private int recordlength;
 
     public DBaseResultSet(DBaseHeader DBaseHeader, RandomAccessFile file) {
-        this.DBaseHeader = DBaseHeader;
+        this.header = DBaseHeader;
         this.file = file;
         pointer = DBaseHeader.getNumberOfBytes();
         fieldLengths = new int[DBaseHeader.getDBaseFields().size()];
@@ -34,7 +35,7 @@ public class DBaseResultSet {
     }
 
     public boolean next() {
-        if (count > DBaseHeader.getNumberOfRecords()) {
+        if (count > header.getNumberOfRecords()) {
             return false;
         }
         if (count != 0) {
@@ -47,36 +48,14 @@ public class DBaseResultSet {
         return true;
     }
 
-
     /**
-     * Validate the column index
-     * @param columnIndex
-     * @throws DBaseReaderException
-     */
-    private void validateIndex(int columnIndex) throws DBaseReaderException{
-        if (columnIndex < 0 || columnIndex >= DBaseHeader.getDBaseFields().size())
-            throw new DBaseReaderException(columnIndex + " out of bound");
-    }
-
-    /**
-     * Validate the column name
-     * @param columnName
-     * @throws DBaseReaderException
-     */
-    private void validateColumnName(String columnName) throws DBaseReaderException {
-        if (columnName == null ) {
-            throw new DBaseReaderException("null column name");
-        }
-        if (columnName.isEmpty()) {
-            throw new DBaseReaderException("Empty column name");
-        }
-    }
-
-    /**
-     * 
-     * @param columnindex
+     * Retrieves the number, types and properties of this ResultSet object's columns.
      * @return
      */
+    public DBaseResultSetMetaData getMetaData() {
+        DBaseResultSetMetaData metaData = new DBaseResultSetMetaData(header);
+        return metaData;
+    }
     private int computeFieldStart(int columnindex) {
         int pre = 0;
         for (int i = 0; i < columnindex; i++) {
@@ -86,41 +65,19 @@ public class DBaseResultSet {
     }
 
     /**
-     * find column index by the column name
-     * @param columnName
-     * @return
-     * @throws DBaseReaderException
-     */
-    private int findColumnIndexByName(String columnName) throws DBaseReaderException {
-        validateColumnName(columnName);
-        int index = 0;
-        boolean found = false;
-        for (; index < DBaseHeader.getDBaseFields().size(); index++) {
-            if (DBaseHeader.getDBaseFields().get(index).getName().equals(columnName)) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            throw new DBaseReaderException("unknown column " + columnName);
-        }
-        return index;
-    }
-
-    /**
      * Retrieve the designated column in the current row of this ResultSet object as String.
      * @param columnName
      * @return
      * @throws DBaseReaderException
      */
     public String getString (String columnName) throws DBaseReaderException {
-        validateColumnName(columnName);
-        int columnIndex = findColumnIndexByName(columnName);
+        ReaderUtil.validateColumnName(columnName, header);
+        int columnIndex = ReaderUtil.findColumnIndexByName(columnName, header);
         pointer = recordHead;
         pointer += computeFieldStart(columnIndex);
         String ret;
         try {
-            byte[] bytes = ReaderUtil.readNBytes(file, pointer, DBaseHeader.getDBaseFields().get(columnIndex).getLength());
+            byte[] bytes = ReaderUtil.readNBytes(file, pointer, header.getDBaseFields().get(columnIndex).getLength());
             ret = new String(bytes);
         } catch (IOException e) {
             throw new DBaseReaderException(e);
@@ -135,12 +92,12 @@ public class DBaseResultSet {
      * @throws DBaseReaderException
      */
     public String getString(int columnIndex) throws DBaseReaderException {
-        validateIndex(columnIndex);
+        ReaderUtil.validateIndex(columnIndex, header);
         pointer = recordHead;
         pointer += computeFieldStart(columnIndex);
         String ret = null;
         try {
-            byte[] bytes = ReaderUtil.readNBytes(file, pointer, DBaseHeader.getDBaseFields().get(columnIndex).getLength());
+            byte[] bytes = ReaderUtil.readNBytes(file, pointer, header.getDBaseFields().get(columnIndex).getLength());
             ret = new String(bytes);
         } catch (IOException e) {
             throw new DBaseReaderException(e);
@@ -156,13 +113,12 @@ public class DBaseResultSet {
      * @return
      */
     public BigDecimal getNumber(int columnIndex) throws DBaseReaderException {
-        validateIndex(columnIndex);
+        ReaderUtil.validateIndex(columnIndex, header);
         pointer = recordHead;
         pointer += computeFieldStart(columnIndex);
         BigDecimal decimal;
         try {
-            int fieldlength = DBaseHeader.getDBaseFields().get(columnIndex).getLength();
-            byte[] bytes = ReaderUtil.readNBytes(file, pointer, DBaseHeader.getDBaseFields().get(columnIndex).getLength());
+            byte[] bytes = ReaderUtil.readNBytes(file, pointer, header.getDBaseFields().get(columnIndex).getLength());
             String str = new String(bytes);
             str = str.trim();
             decimal = new BigDecimal(str);
@@ -179,13 +135,13 @@ public class DBaseResultSet {
      * @return
      */
     public BigDecimal getNumber(String columnName) throws DBaseReaderException {
-        validateColumnName(columnName);
-        int columnIndex = findColumnIndexByName(columnName);
+        ReaderUtil.validateColumnName(columnName, header);
+        int columnIndex = ReaderUtil.findColumnIndexByName(columnName, header);
         pointer = recordHead;
         pointer += computeFieldStart(columnIndex);
         BigDecimal decimal;
         try {
-            byte[] bytes = ReaderUtil.readNBytes(file, pointer, DBaseHeader.getDBaseFields().get(columnIndex).getLength());
+            byte[] bytes = ReaderUtil.readNBytes(file, pointer, header.getDBaseFields().get(columnIndex).getLength());
             String str = new String(bytes);
             decimal = new BigDecimal(str.trim());
         } catch (IOException e) {

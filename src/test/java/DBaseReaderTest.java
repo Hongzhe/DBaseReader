@@ -1,5 +1,5 @@
-import bean.DBaseHeader;
 import org.junit.Test;
+import reader.DBaseReader;
 
 import java.io.IOException;
 
